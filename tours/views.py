@@ -1,11 +1,18 @@
 import random
 
-from django.http import HttpRequest, Http404
+from django.http import HttpRequest, Http404, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
 import tours.data
 
 
-# Create your views here.
+def error404_view(request: HttpRequest, exception=None):
+    return HttpResponseNotFound('<h1>Error 404</h1><p>Page Not Found</p>')
+
+
+def error500_view(request: HttpRequest, exception=None):
+    return HttpResponseServerError("<h1>Error 500</h1><p>That's a crap</p>")
+
+
 def main_view(request: HttpRequest):
     output_tours_ids = random.sample(range(1, len(tours.data.tours) + 1), 6)
     output_tours = {}
@@ -20,10 +27,14 @@ def main_view(request: HttpRequest):
                     'picture': output_tour['picture']
                 }
         })
-    return render(request, 'tours/index.html', context={
-        'tours': output_tours,
-        'departures': tours.data.departures
-    })
+
+    return render(
+        request,
+        'tours/index.html',
+        context={
+            'tours': output_tours,
+        }
+    )
 
 
 def departure_view(request: HttpRequest, departure: str):
@@ -33,8 +44,9 @@ def departure_view(request: HttpRequest, departure: str):
         raise Http404
 
     output_tours = {}
-    nights = [-1, -1]               # хранит минимальное и максимальное значение
-    prices = list(nights)           # хранит минимальное и максимальное значение
+    min_max_nights = [-1, -1]               # хранит минимальное и максимальное значение
+    min_max_prices = [-1, -1]               # хранит минимальное и максимальное значение
+
     for tour_id, tour in tours.data.tours.items():
         if tour['departure'] == departure:
             output_tours.update({
@@ -45,34 +57,47 @@ def departure_view(request: HttpRequest, departure: str):
                         'picture': tour['picture']
                     }
             })
-            if tour['nights'] > nights[1] == -1:
-                nights[1] = tour['nights']
-                if nights[0] == -1:
-                    nights[0] = nights[1]
-            if tour['nights'] < nights[0]:
-                nights[0] = tour['nights']
 
-            if tour['price'] > prices[1]:
-                prices[1] = tour['price']
-                if prices[0] == -1:
-                    prices[0] = prices[1]
-            if tour['price'] < prices[0]:
-                prices[0] = tour['price']
+            # находим минимальное и максимальное значение ночей и цен
+            if tour['nights'] > min_max_nights[1] == -1:
+                min_max_nights[1] = tour['nights']
+                if min_max_nights[0] == -1:
+                    min_max_nights[0] = min_max_nights[1]
+            if tour['nights'] < min_max_nights[0]:
+                min_max_nights[0] = tour['nights']
 
-    return render(request, 'tours/departure.html', context={
-        'departures': tours.data.departures,
-        'active_departure': output_departure,
-        'quantity': len(output_tours),
-        'prices': prices,
-        'nights': nights,
-        'tours': output_tours
-    })
+            if tour['price'] > min_max_prices[1]:
+                min_max_prices[1] = tour['price']
+                if min_max_prices[0] == -1:
+                    min_max_prices[0] = min_max_prices[1]
+            if tour['price'] < min_max_prices[0]:
+                min_max_prices[0] = tour['price']
+
+    return render(
+        request,
+        'tours/departure.html',
+        context={
+            'active_departure': output_departure,
+            'quantity': len(output_tours),
+            'prices': min_max_prices,
+            'nights': min_max_nights,
+            'tours': output_tours
+        }
+    )
 
 
-def tour_view(request: HttpRequest, id: int):
-    output_tour = dict(tours.data.tours[id])
+def tour_view(request: HttpRequest, tour_id: int):
+    try:
+        output_tour = dict(tours.data.tours[tour_id])
+    except KeyError:
+        raise Http404
+
     output_tour['departure'] = tours.data.departures[output_tour['departure']]
-    return render(request, 'tours/tour.html', context={
-        'departures': tours.data.departures,
-        'tour': output_tour
-    })
+
+    return render(
+        request,
+        'tours/tour.html',
+        context={
+            'tour': output_tour
+        }
+    )
