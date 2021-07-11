@@ -10,22 +10,16 @@
 <body>
   <header class="container mt-3">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="/">Stepik Travel</a>
+      <a class="navbar-brand" href="{% url 'main_view' %}">{{ title }}</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           {% for departure_code, departure_name in departures.items %}
-            {% if active_departure == departure_name %}
-              <li class="nav-item active">
-                <a class="nav-link" href="/departure/{{ departure_code }}">Из {{ departure_name }}</a>
+              <li class="nav-item {% if request.path == '/departure/'|add:departure_code %} active {% endif %}">
+                <a class="nav-link" href="{% url 'departure_view' departure_code %}">Из {{ departure_name }}</a>
               </li>
-            {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="/departure/{{ departure_code }}">Из {{ departure_name }}</a>
-              </li>
-            {% endif %}
           {% endfor %}
         </ul>
       </div>

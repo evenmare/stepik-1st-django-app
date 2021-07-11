@@ -3,9 +3,9 @@
   <main class="container">
     <!-- HERO -->
     <section class="jumbotron text-center mt-4" style="background-color: white;">
-      <h1 class="display-4">Всякие туры</h1>
-      <p class="lead">Для тех, кого отвлекают дома</p>
-      <p class="mt-5 w-50 mx-auto">Лучшие направления,где никто не будет вам мешать сидеть на берегу и изучать программирование, дизайн, разработку игр и управление продуктами</p>
+      <h1 class="display-4">{{ head_title }}</h1>
+      <p class="lead">{{ subtitle }}</p>
+      <p class="mt-5 w-50 mx-auto">{{ description }}</p>
     </section>
     <!-- CARDS -->
     {% include 'tours/cards.html' %}
