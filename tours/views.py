@@ -32,6 +32,9 @@ def main_view(request: HttpRequest):
         request,
         'tours/index.html',
         context={
+            'subtitle': tours.data.subtitle,
+            'head_title': tours.data.head_title,
+            'description': tours.data.description,
             'tours': output_tours,
         }
     )
