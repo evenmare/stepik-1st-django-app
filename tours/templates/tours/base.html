@@ -16,14 +16,14 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          {% for key, value in departures.items %}
-            {% if active_departure == value %}
+          {% for departure_code, departure_name in departures.items %}
+            {% if active_departure == departure_name %}
               <li class="nav-item active">
-                <a class="nav-link" href="/departure/{{ key }}">Из {{ value }}</a>
+                <a class="nav-link" href="/departure/{{ departure_code }}">Из {{ departure_name }}</a>
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="/departure/{{ key }}">Из {{ value }}</a>
+                <a class="nav-link" href="/departure/{{ departure_code }}">Из {{ departure_name }}</a>
               </li>
             {% endif %}
           {% endfor %}
