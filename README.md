@@ -1,9 +1,5 @@
-# Первый этап проекта STEPIK Academy
+# Второй этап проекта STEPIK Academy
 
-* При запросе /departure/<str:departure>/ направления ограничены шаблонными (из .html):
-  * mos - Москва
-  * spb - Петербург
-  * nvs - Новосибирск
-  * ekb - Екатеринбург
-  * kzn - Казань
-* При запросе /tour/<int:id>/ вывод ID производится в название вида "Tour No. ID"
+{% for line in readme %}
+ <p>PASS</p>
+{% endfor %}
