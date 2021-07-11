@@ -33,31 +33,31 @@ def departure_view(request: HttpRequest, departure: str):
         raise Http404
 
     output_tours = {}
-    nights = [-1, -1]
-    prices = list(nights)
-    for key, value in tours.data.tours.items():
-        if value['departure'] == departure:
+    nights = [-1, -1]               # хранит минимальное и максимальное значение
+    prices = list(nights)           # хранит минимальное и максимальное значение
+    for tour_id, tour in tours.data.tours.items():
+        if tour['departure'] == departure:
             output_tours.update({
-                key:
+                tour_id:
                     {
-                        'title': value['title'],
-                        'description': value['description'],
-                        'picture': value['picture']
+                        'title': tour['title'],
+                        'description': tour['description'],
+                        'picture': tour['picture']
                     }
             })
-            if value['nights'] > nights[1] == -1:
-                nights[1] = value['nights']
+            if tour['nights'] > nights[1] == -1:
+                nights[1] = tour['nights']
                 if nights[0] == -1:
                     nights[0] = nights[1]
-            if value['nights'] < nights[0]:
-                nights[0] = value['nights']
+            if tour['nights'] < nights[0]:
+                nights[0] = tour['nights']
 
-            if value['price'] > prices[1]:
-                prices[1] = value['price']
+            if tour['price'] > prices[1]:
+                prices[1] = tour['price']
                 if prices[0] == -1:
                     prices[0] = prices[1]
-            if value['price'] < prices[0]:
-                prices[0] = value['price']
+            if tour['price'] < prices[0]:
+                prices[0] = tour['price']
 
     return render(request, 'tours/departure.html', context={
         'departures': tours.data.departures,
